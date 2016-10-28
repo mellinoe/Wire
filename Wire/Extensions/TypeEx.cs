@@ -36,6 +36,8 @@ namespace Wire.Extensions
         public static readonly Type TypeType = typeof(Type);
         public static readonly Type RuntimeType = Type.GetType("System.RuntimeType");
 
+        public static Func<string, string, Type> TypeDiscoveryFunc;
+
         public static bool IsWirePrimitive(this Type type)
         {
             return type == Int32Type ||
@@ -113,6 +115,17 @@ namespace Wire.Extensions
             {
                 var shortName = StringEx.FromUtf8Bytes(b.Bytes, 0, b.Bytes.Length);
                 var typename = ToQualifiedAssemblyName(shortName);
+                string assemblyName = typename.Split(',')[1].Trim();
+                if (TypeDiscoveryFunc != null)
+                {
+                    string simpleTypeName = typename.Split(',')[0].Trim();
+                    Type t = TypeDiscoveryFunc(assemblyName, simpleTypeName);
+                    if (t != null)
+                    {
+                        return t;
+                    }
+                }
+
                 return Type.GetType(typename, true);
             });
         }
@@ -173,17 +186,17 @@ namespace Wire.Extensions
             if (type == Int16Type)
                 return sizeof(short);
             if (type == Int32Type)
-                return sizeof (int);
+                return sizeof(int);
             if (type == Int64Type)
-                return sizeof (long);
+                return sizeof(long);
             if (type == BoolType)
-                return sizeof (bool);
+                return sizeof(bool);
             if (type == UInt16Type)
-                return sizeof (ushort);
+                return sizeof(ushort);
             if (type == UInt32Type)
-                return sizeof (uint);
+                return sizeof(uint);
             if (type == UInt64Type)
-                return sizeof (ulong);
+                return sizeof(ulong);
             if (type == CharType)
                 return sizeof(char);
 
@@ -195,7 +208,7 @@ namespace Wire.Extensions
         private static string GetCoreAssemblyName()
         {
             var name = 1.GetType().AssemblyQualifiedName;
-            var part = name.Substring( name.IndexOf(", Version", StringComparison.Ordinal));
+            var part = name.Substring(name.IndexOf(", Version", StringComparison.Ordinal));
             return part;
         }
 

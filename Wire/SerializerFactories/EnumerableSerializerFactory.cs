@@ -11,6 +11,8 @@ namespace Wire.SerializerFactories
 {
     public class EnumerableSerializerFactory : ValueSerializerFactory
     {
+        private static readonly Type s_ienumerableType = typeof(IEnumerable<>);
+
         public override bool CanSerialize(Serializer serializer, Type type)
         {
             //TODO: check for constructor with IEnumerable<T> param
@@ -57,7 +59,7 @@ namespace Wire.SerializerFactories
             var elementSerializer = serializer.GetSerializerByType(elementType);
 
             var countProperty = type.GetTypeInfo().GetProperty("Count");
-            var addRange = type.GetTypeInfo().GetMethod("AddRange");
+            var addRange = type.GetTypeInfo().GetMethod("AddRange", new Type[] { s_ienumerableType.MakeGenericType(GetEnumerableType(type)) });
             var add = type.GetTypeInfo().GetMethod("Add");
 
             Func<object, int> countGetter = o => (int)countProperty.GetValue(o);

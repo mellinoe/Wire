@@ -237,17 +237,17 @@ namespace Wire
 
 
 
-            try
+            //try
             {
                 //build the serializer IL code
                 CodeGenerator.BuildSerializer(this, (ObjectSerializer)serializer);
 
             }
-            catch(Exception exp)
+            //catch(Exception exp)
             {
-                var invalidSerializer = new UnsupportedTypeSerializer(type,exp.Message);
-                _serializers[type] = invalidSerializer;
-                return invalidSerializer;
+                //var invalidSerializer = new UnsupportedTypeSerializer(type,exp.Message);
+                //_serializers[type] = invalidSerializer;
+                //return invalidSerializer;
             }
 
 
